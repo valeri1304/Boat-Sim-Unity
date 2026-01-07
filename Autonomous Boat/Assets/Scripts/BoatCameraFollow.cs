@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class BoatOrbitCamera : MonoBehaviour
+public class BoatOrbitCamera2 : MonoBehaviour
 {
     public Transform boat;      // assign your Boat here
     public float rotationSpeed = 5f;
