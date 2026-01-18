@@ -9,81 +9,82 @@ public class BoatDifferentialArrows : MonoBehaviour
     public Transform rightMotor;  // right side of boat
 
     [Header("Thrust Settings")]
-    public float maxThrustPerMotor = 50f;    // adjust to taste
-    public float inPlaceTurnTorque = 30f;    // for turning with only left/right
+    public float maxThrustPerMotor = 50f;   // N
+    public float turnFactor = 0.6f;         // 0..1 how strong turning is while moving
+
+    [Header("Stabilization")]
+    public float yawDamping = 8f;           // higher = less unwanted spinning
+    public float inputDeadzone = 0.01f;
+
+    void Reset()
+    {
+        Boat = GetComponent<Rigidbody>();
+    }
 
     void FixedUpdate()
     {
+        if (Boat == null) return;
+
         // --- 1) Read arrow keys ---
-        bool forwardKey = Input.GetKey(KeyCode.UpArrow);
-        bool backwardKey = Input.GetKey(KeyCode.DownArrow);
-        bool leftKey = Input.GetKey(KeyCode.LeftArrow);
-        bool rightKey = Input.GetKey(KeyCode.RightArrow);
+        int forwardDir = 0; // -1 backward, 0 none, +1 forward
+        if (Input.GetKey(KeyCode.UpArrow)) forwardDir += 1;
+        if (Input.GetKey(KeyCode.DownArrow)) forwardDir -= 1;
 
-        int forwardDir = 0; // -1 = backward, 0 = none, 1 = forward
-        if (forwardKey) forwardDir += 1;
-        if (backwardKey) forwardDir -= 1;
+        int turnDir = 0; // -1 left, 0 none, +1 right
+        if (Input.GetKey(KeyCode.RightArrow)) turnDir += 1;
+        if (Input.GetKey(KeyCode.LeftArrow)) turnDir -= 1;
 
-        int turnDir = 0; // -1 = left, 0 = none, 1 = right
-        if (rightKey) turnDir += 1;
-        if (leftKey) turnDir -= 1;
-
-        float leftPower = 0f;   // -1..1 (multiplier)
+        // --- 2) Convert to motor powers (-1..1) ---
+        float leftPower = 0f;
         float rightPower = 0f;
-
-        // --- 2) Movement logic ---
 
         if (forwardDir != 0)
         {
-            // We are moving forward or backward
-            float basePower = forwardDir; // +1 or -1
+            // Moving: differential thrust for steering
+            // IMPORTANT: when reversing, steering direction flips
+            float steer = turnDir * turnFactor;
+            if (forwardDir < 0) steer = -steer;
 
-            if (turnDir == 0)
-            {
-                // Straight: both motors same power
-                leftPower = basePower;
-                rightPower = basePower;
-            }
-            else if (turnDir > 0)
-            {
-                // Turning RIGHT with forward/back:
-                //   outer (left) motor ON, inner (right) motor OFF
-                leftPower = basePower; // outer
-                rightPower = 0f;        // inner
-            }
-            else // turnDir < 0
-            {
-                // Turning LEFT with forward/back:
-                //   outer (right) motor ON, inner (left) motor OFF
-                rightPower = basePower; // outer
-                leftPower = 0f;        // inner
-            }
+            leftPower = Mathf.Clamp(forwardDir + steer, -1f, 1f);
+            rightPower = Mathf.Clamp(forwardDir - steer, -1f, 1f);
+        }
+        else if (turnDir != 0)
+        {
+            // In-place turn: opposite thrust (NOT torque)
+            leftPower = Mathf.Clamp(-turnDir, -1f, 1f);
+            rightPower = Mathf.Clamp(+turnDir, -1f, 1f);
         }
         else
         {
-            // No Up/Down pressed
-            // You said you want arrows: left/right also do something,
-            // so we’ll allow **in-place turning** using torque.
-            if (turnDir != 0)
-            {
-                Boat.AddTorque(Vector3.up * (turnDir * inPlaceTurnTorque), ForceMode.Force);
-            }
+            // No input: damp unwanted yaw (stop spinning)
+            Vector3 ang = Boat.angularVelocity;
+            Boat.angularVelocity = new Vector3(ang.x, ang.y * Mathf.Clamp01(1f - yawDamping * Time.fixedDeltaTime), ang.z);
+            return;
         }
 
+        // deadzone
+        if (Mathf.Abs(leftPower) < inputDeadzone) leftPower = 0f;
+        if (Mathf.Abs(rightPower) < inputDeadzone) rightPower = 0f;
+
         // --- 3) Apply forces at motor positions ---
+        Vector3 fwd = Boat.transform.forward;
 
-        Vector3 forwardDirWorld = Boat.transform.forward;
-
-        if (leftMotor != null && Mathf.Abs(leftPower) > 0.001f)
+        if (leftMotor != null && leftPower != 0f)
         {
-            Vector3 leftForce = forwardDirWorld * (leftPower * maxThrustPerMotor);
+            Vector3 leftForce = fwd * (leftPower * maxThrustPerMotor);
             Boat.AddForceAtPosition(leftForce, leftMotor.position, ForceMode.Force);
         }
 
-        if (rightMotor != null && Mathf.Abs(rightPower) > 0.001f)
+        if (rightMotor != null && rightPower != 0f)
         {
-            Vector3 rightForce = forwardDirWorld * (rightPower * maxThrustPerMotor);
+            Vector3 rightForce = fwd * (rightPower * maxThrustPerMotor);
             Boat.AddForceAtPosition(rightForce, rightMotor.position, ForceMode.Force);
+        }
+
+        // Extra stabilization: damp yaw a bit even while moving (prevents long drift spin)
+        {
+            Vector3 ang = Boat.angularVelocity;
+            Boat.angularVelocity = new Vector3(ang.x, ang.y * Mathf.Clamp01(1f - (yawDamping * 0.5f) * Time.fixedDeltaTime), ang.z);
         }
     }
 }
