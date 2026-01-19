@@ -1,5 +1,4 @@
-using System;
-using System.Linq;
+﻿using System;
 using UnityEngine;
 using Unity.Robotics.ROSTCPConnector;
 using RosMessageTypes.Sensor;
@@ -11,13 +10,10 @@ public class RosDepth32FC1Publisher : MonoBehaviour
     public Camera depthCam;
     public string topic = "/camera/depth/image_raw";
     public string frameId = "camera_depth_frame";
-
-    public int width = 1280;
-    public int height = 720;
     public int fps = 30;
 
     ROSConnection ros;
-    Texture2D depthCpu; // reads RFloat RT
+    Texture2D depthCpu;
     float nextTime;
 
     void Start()
@@ -25,13 +21,11 @@ public class RosDepth32FC1Publisher : MonoBehaviour
         ros = ROSConnection.GetOrCreateInstance();
         ros.RegisterPublisher<ImageMsg>(topic);
 
-        if (depthCam == null)
-            throw new Exception("RosDepth32FC1Publisher: Assign depthCam in Inspector.");
+        if (depthCam == null) throw new Exception("Assign depthCam in Inspector.");
+        if (depthCam.targetTexture == null) throw new Exception("Depth camera needs a Target Texture.");
 
-        if (depthCam.targetTexture == null)
-            throw new Exception("RosDepth32FC1Publisher: Depth camera needs a Target Texture (RenderTexture).");
-
-        depthCpu = new Texture2D(width, height, TextureFormat.RFloat, false, true);
+        var rt = depthCam.targetTexture;
+        depthCpu = new Texture2D(rt.width, rt.height, TextureFormat.RFloat, false, true);
     }
 
     void Update()
@@ -41,38 +35,39 @@ public class RosDepth32FC1Publisher : MonoBehaviour
 
         RenderTexture rt = depthCam.targetTexture;
 
+        // ja RT izmers mainas runtime, pārtaisa Texture2D
+        if (depthCpu.width != rt.width || depthCpu.height != rt.height)
+            depthCpu = new Texture2D(rt.width, rt.height, TextureFormat.RFloat, false, true);
+
         RenderTexture.active = rt;
-        depthCpu.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+        depthCpu.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
         depthCpu.Apply(false);
         RenderTexture.active = null;
 
-        var meters = depthCpu.GetRawTextureData<float>();
+        var floats = depthCpu.GetRawTextureData<float>();
 
-        // float[] -> byte[]
-        byte[] bytes = new byte[meters.Length * sizeof(float)];
-        Buffer.BlockCopy(meters.ToArray(), 0, bytes, 0, bytes.Length);
+        byte[] bytes = new byte[floats.Length * sizeof(float)];
+        Buffer.BlockCopy(floats.ToArray(), 0, bytes, 0, bytes.Length);
 
-        // time stamp
+        // stamp
         double t = Time.realtimeSinceStartupAsDouble;
         int sec = (int)t;
         uint nanosec = (uint)((t - sec) * 1e9);
 
-        var stamp = new TimeMsg();
-        stamp.sec = sec;
-        stamp.nanosec = nanosec;
+        var stamp = new TimeMsg { sec = sec, nanosec = nanosec };
+        var header = new HeaderMsg { stamp = stamp, frame_id = frameId };
 
-        var header = new HeaderMsg();
-        header.stamp = stamp;
-        header.frame_id = frameId;
-
-        var msg = new ImageMsg();
-        msg.header = header;
-        msg.height = (uint)height;
-        msg.width = (uint)width;
-        msg.encoding = "32FC1";
-        msg.is_bigendian = 0;
-        msg.step = (uint)(width * 4);
-        msg.data = bytes;
+        // 32FC1 -> step = width * 4
+        var msg = new ImageMsg
+        {
+            header = header,
+            height = (uint)rt.height,
+            width = (uint)rt.width,
+            encoding = "32FC1",
+            is_bigendian = 0,
+            step = (uint)(rt.width * 4),
+            data = bytes
+        };
 
         ros.Publish(topic, msg);
     }
