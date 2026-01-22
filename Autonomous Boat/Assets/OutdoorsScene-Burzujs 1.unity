@@ -463,7 +463,7 @@ GameObject:
   m_Component:
   - component: {fileID: 185201101}
   - component: {fileID: 185201100}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: DepthViz
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -488,7 +488,7 @@ MonoBehaviour:
   customPasses:
   - rid: 8379375329228357702
   injectionPoint: 1
-  m_TargetCamera: {fileID: 0}
+  m_TargetCamera: {fileID: 2036572687}
   useTargetCamera: 1
   references:
     version: 2
@@ -504,7 +504,7 @@ MonoBehaviour:
         passFoldout: 0
         m_Version: 0
         nearPlane: 0.1
-        farPlane: 100
+        farPlane: 8
 --- !u!4 &185201101
 Transform:
   m_ObjectHideFlags: 0
@@ -1064,7 +1064,8 @@ GameObject:
   m_Component:
   - component: {fileID: 441735942}
   - component: {fileID: 441735941}
-  - component: {fileID: 441735943}
+  - component: {fileID: 441735945}
+  - component: {fileID: 441735944}
   m_Layer: 0
   m_Name: ROS2
   m_TagString: Untagged
@@ -1099,7 +1100,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &441735943
+--- !u!114 &441735944
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1108,68 +1109,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 441735940}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b508d81ddf425f149b16bdc0a626fb7c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RosConect
---- !u!1 &519478559
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 519478560}
-  - component: {fileID: 519478562}
-  - component: {fileID: 519478561}
-  m_Layer: 0
-  m_Name: RosConetion
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &519478560
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 519478559}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.5749998, z: 0.3000002}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &519478561
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 519478559}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a7da9cb70f913fe49b98a9e43e862c82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
   topicName: /cmd_vel
---- !u!114 &519478562
+--- !u!114 &441735945
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 519478559}
+  m_GameObject: {fileID: 441735940}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7acef0b79454c9b4dae3f8139bc4ba77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Robotics.ROSTCPConnector::Unity.Robotics.ROSTCPConnector.ROSConnection
-  m_RosIPAddress: 127.0.0.1
+  m_RosIPAddress: 172.31.27.220
   m_RosPort: 10000
   m_ConnectOnStart: 1
   m_KeepaliveTime: 1
@@ -1303,7 +1259,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   topic: /cmd_vel
-  rb: {fileID: 0}
+  rb: {fileID: 683586510}
   linearScale: 1
   angularScale: 1
 --- !u!1 &691948126
@@ -1864,7 +1820,6 @@ GameObject:
   - component: {fileID: 1360485373}
   - component: {fileID: 1360485372}
   - component: {fileID: 1360485371}
-  - component: {fileID: 1360485374}
   - component: {fileID: 1360485375}
   m_Layer: 0
   m_Name: RGBCam
@@ -1882,7 +1837,7 @@ Transform:
   m_GameObject: {fileID: 1360485369}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.35, z: 0.3}
+  m_LocalPosition: {x: 0.264, y: 0.35, z: 0.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2086,18 +2041,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!114 &1360485374
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1360485369}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e168abb483766a43b683a917e4b679a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1360485375
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2111,10 +2054,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RosRgbCompressedPublisher
   rgbCam: {fileID: 1360485373}
-  topic: /rgb
+  topic: /camera/color/image_raw/compressed
   frameId: camera_color_frame
-  width: 1280
-  height: 720
   fps: 30
   jpegQuality: 80
 --- !u!1001 &1386790702
@@ -3331,7 +3272,7 @@ Transform:
   m_GameObject: {fileID: 2036572682}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.35, z: 0.3}
+  m_LocalPosition: {x: 0.264, y: 0.35, z: 0.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3578,8 +3519,8 @@ MonoBehaviour:
   depthCam: {fileID: 2036572687}
   topic: /depth
   frameId: camera_depth_frame
-  fps: 15
-  maxMeters: 20
+  fps: 30
+  maxMeters: 5
 --- !u!114 &2036572690
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3762,6 +3703,5 @@ SceneRoots:
   - {fileID: 441735942}
   - {fileID: 1901707727}
   - {fileID: 1777653781}
-  - {fileID: 519478560}
   - {fileID: 691948127}
   - {fileID: 185201101}

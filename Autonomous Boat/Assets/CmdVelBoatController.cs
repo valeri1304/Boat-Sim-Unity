@@ -34,4 +34,5 @@ public class CmdVelBoatController : MonoBehaviour
         rb.linearVelocity = transform.forward * linX;
         rb.angularVelocity = Vector3.up * angZ;
     }
+
 }
