@@ -1820,7 +1820,7 @@ GameObject:
   - component: {fileID: 1360485373}
   - component: {fileID: 1360485372}
   - component: {fileID: 1360485371}
-  - component: {fileID: 1360485375}
+  - component: {fileID: 1360485374}
   m_Layer: 0
   m_Name: RGBCam
   m_TagString: Untagged
@@ -2041,7 +2041,7 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!114 &1360485375
+--- !u!114 &1360485374
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2050,14 +2050,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1360485369}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 49f8af13e8ed7964792d028241abf116, type: 3}
+  m_Script: {fileID: 11500000, guid: 3dc2c0125c16f994a83360e3a890a0d5, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RosRgbCompressedPublisher
-  rgbCam: {fileID: 1360485373}
-  topic: /camera/color/image_raw/compressed
+  m_EditorClassIdentifier: '::'
+  rgbCamera: {fileID: 1360485373}
+  topicName: /rgb
   frameId: camera_color_frame
-  fps: 30
-  jpegQuality: 80
+  width: 1280
+  height: 720
+  publishRate: 30
 --- !u!1001 &1386790702
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3253,7 +3254,6 @@ GameObject:
   - component: {fileID: 2036572686}
   - component: {fileID: 2036572685}
   - component: {fileID: 2036572684}
-  - component: {fileID: 2036572688}
   - component: {fileID: 2036572689}
   - component: {fileID: 2036572690}
   m_Layer: 6
@@ -3302,8 +3302,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23c1ce4fb46143f46bc5cb5224c934f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clearColorMode: 0
-  backgroundColorHDR: {r: 0.025, g: 0.07, b: 0.19, a: 0}
+  clearColorMode: 1
+  backgroundColorHDR: {r: 0.039546248, g: 0.039546248, b: 0.039546248, a: 0}
   clearDepth: 1
   volumeLayerMask:
     serializedVersion: 2
@@ -3488,22 +3488,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!114 &2036572688
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2036572682}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 294167b0febf7b84e8903014deaa76f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RosDepth32FC1Publisher
-  depthCam: {fileID: 2036572687}
-  topic: /camera/depth/image_raw
-  frameId: camera_depth_frame
-  fps: 30
 --- !u!114 &2036572689
 MonoBehaviour:
   m_ObjectHideFlags: 0
