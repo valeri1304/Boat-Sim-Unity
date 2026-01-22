@@ -1,10 +1,10 @@
 ﻿using System;
 using UnityEngine;
 using Unity.Robotics.ROSTCPConnector;
-using RosMessageTypes.Sensor;
-using RosMessageTypes.Std;
-using RosMessageTypes.BuiltinInterfaces;
 
+using RosMessageTypes.Sensor;
+using RosMessageTypes.Std;                 
+using RosMessageTypes.BuiltinInterfaces;
 public class RosDepthMono8Publisher : MonoBehaviour
 {
     public Camera depthCam;
@@ -15,11 +15,10 @@ public class RosDepthMono8Publisher : MonoBehaviour
     public int fps = 15;
 
     [Header("Visualization")]
-    public float maxMeters = 20f;   // 0..maxMeters -> 0..255 (tālāk par max -> 255)
+    public float maxMeters = 20f;
 
     ROSConnection ros;
-    Texture2D depthCpu;            // RFloat readback
-    Texture2D monoCpu;             // RGBA32 for Encode/bytes
+    Texture2D depthCpu;
     float nextTime;
 
     void Start()
@@ -27,13 +26,14 @@ public class RosDepthMono8Publisher : MonoBehaviour
         ros = ROSConnection.GetOrCreateInstance();
         ros.RegisterPublisher<ImageMsg>(topic);
 
-        if (depthCam == null) throw new Exception("RosDepthMono8Publisher: Assign depthCam.");
-        if (depthCam.targetTexture == null) throw new Exception("RosDepthMono8Publisher: depthCam needs a Target Texture.");
+        if (depthCam == null)
+            throw new Exception("Assign depthCam");
+
+        if (depthCam.targetTexture == null)
+            throw new Exception("DepthCam needs a RenderTexture");
 
         var rt = depthCam.targetTexture;
-
         depthCpu = new Texture2D(rt.width, rt.height, TextureFormat.RFloat, false, true);
-        monoCpu = new Texture2D(rt.width, rt.height, TextureFormat.R8, false, true); // 1 kanāls
     }
 
     void Update()
@@ -43,14 +43,7 @@ public class RosDepthMono8Publisher : MonoBehaviour
 
         RenderTexture rt = depthCam.targetTexture;
 
-        // ja mainās RT izmērs
-        if (depthCpu.width != rt.width || depthCpu.height != rt.height)
-        {
-            depthCpu = new Texture2D(rt.width, rt.height, TextureFormat.RFloat, false, true);
-            monoCpu = new Texture2D(rt.width, rt.height, TextureFormat.R8, false, true);
-        }
-
-        // 1) nolasa depth floatus
+        // Read depth
         RenderTexture.active = rt;
         depthCpu.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
         depthCpu.Apply(false);
@@ -58,41 +51,48 @@ public class RosDepthMono8Publisher : MonoBehaviour
 
         var depthFloats = depthCpu.GetRawTextureData<float>();
 
-        // 2) pārveido uz mono8
-        // 0m -> 0 (melns), maxMeters -> 255 (balts)
-        // NaN/inf/neg -> 0
-        int n = depthFloats.Length;
-        byte[] mono = new byte[n];
+        int width = rt.width;
+        int height = rt.height;
 
+        byte[] mono = new byte[width * height];
         float inv = (maxMeters > 0.001f) ? (255f / maxMeters) : 0f;
 
-        for (int i = 0; i < n; i++)
+        // 🔁 180° ROTĀCIJA (X + Y flip)
+        for (int y = 0; y < height; y++)
         {
-            float d = depthFloats[i];
-            if (float.IsNaN(d) || float.IsInfinity(d) || d <= 0f) { mono[i] = 0; continue; }
+            for (int x = 0; x < width; x++)
+            {
+                int src = y * width + x;
+                int dst = (height - 1 - y) * width + (width - 1 - x);
 
-            float v = d * inv;
-            if (v > 255f) v = 255f;
-            mono[i] = (byte)v;
+                float d = depthFloats[src];
+                if (float.IsNaN(d) || float.IsInfinity(d) || d <= 0f)
+                {
+                    mono[dst] = 0;
+                    continue;
+                }
+
+                float v = d * inv;
+                mono[dst] = (byte)Mathf.Clamp(v, 0f, 255f);
+            }
         }
 
-        // 3) ROS header
+        // ROS time
         double t = Time.realtimeSinceStartupAsDouble;
-        int sec = (int)t;
-        uint nanosec = (uint)((t - sec) * 1e9);
+        var stamp = new TimeMsg
+        {
+            sec = (int)t,
+            nanosec = (uint)((t - (int)t) * 1e9)
+        };
 
-        var stamp = new TimeMsg { sec = sec, nanosec = nanosec };
-        var header = new HeaderMsg { stamp = stamp, frame_id = frameId };
-
-        // 4) ImageMsg (mono8)
         var msg = new ImageMsg
         {
-            header = header,
-            height = (uint)rt.height,
-            width = (uint)rt.width,
+            header = new HeaderMsg { frame_id = frameId, stamp = stamp },
+            height = (uint)height,
+            width = (uint)width,
             encoding = "mono8",
             is_bigendian = 0,
-            step = (uint)rt.width, // 1 baits uz pikseli
+            step = (uint)width,
             data = mono
         };
 
