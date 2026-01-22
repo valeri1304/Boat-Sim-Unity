@@ -453,6 +453,73 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3896574891813515248, guid: 403823e280c67844a8100c1895955449, type: 3}
   m_PrefabInstance: {fileID: 172527364}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &185201099
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 185201101}
+  - component: {fileID: 185201100}
+  m_Layer: 6
+  m_Name: DepthViz
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &185201100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 185201099}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26d6499a6bd256e47b859377446493a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.HighDefinition.Runtime::UnityEngine.Rendering.HighDefinition.CustomPassVolume
+  m_IsGlobal: 0
+  fadeRadius: 0
+  priority: 0
+  customPasses:
+  - rid: 8379375329228357702
+  injectionPoint: 1
+  m_TargetCamera: {fileID: 0}
+  useTargetCamera: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 8379375329228357702
+      type: {class: DepthVizPass, ns: , asm: Assembly-CSharp}
+      data:
+        m_Name: Custom Pass
+        enabled: 1
+        targetColorBuffer: 0
+        targetDepthBuffer: 0
+        clearFlags: 0
+        passFoldout: 0
+        m_Version: 0
+        nearPlane: 0.1
+        farPlane: 100
+--- !u!4 &185201101
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 185201099}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &216172902
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -997,7 +1064,6 @@ GameObject:
   m_Component:
   - component: {fileID: 441735942}
   - component: {fileID: 441735941}
-  - component: {fileID: 441735944}
   - component: {fileID: 441735943}
   m_Layer: 0
   m_Name: ROS2
@@ -1042,32 +1108,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 441735940}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 49f8af13e8ed7964792d028241abf116, type: 3}
+  m_Script: {fileID: 11500000, guid: b508d81ddf425f149b16bdc0a626fb7c, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
-  rgbCam: {fileID: 0}
-  topic: /camera/color/image_raw/compressed
-  frameId: camera_color_frame
-  width: 1280
-  height: 720
-  fps: 30
-  jpegQuality: 80
---- !u!114 &441735944
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 441735940}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 294167b0febf7b84e8903014deaa76f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  depthCam: {fileID: 0}
-  topic: /camera/depth/image_raw
-  frameId: camera_depth_frame
-  fps: 30
+  m_EditorClassIdentifier: Assembly-CSharp::RosConect
 --- !u!1 &519478559
 GameObject:
   m_ObjectHideFlags: 0
@@ -1590,7 +1633,7 @@ MonoBehaviour:
   underWaterScatteringColorMode: 0
   underWaterScatteringColor: {r: 0, g: 0.27, b: 0.23, a: 1}
   underWaterRefraction: 0
-  decalRegionSize: {x: 200, y: 200}
+  decalRegionSize: {x: 50, y: 50}
   decalRegionAnchor: {fileID: 0}
   supportLargeCurrent: 0
   largeCurrentRes: 512
@@ -1609,7 +1652,7 @@ MonoBehaviour:
   deformation: 0
   deformationRes: 512
   foam: 1
-  foamResolution: 512
+  foamResolution: 256
   foamPersistenceMultiplier: 0.5
   foamCurrentInfluence: 0.6
   foamColor: {r: 1, g: 1, b: 1, a: 1}
@@ -2068,7 +2111,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RosRgbCompressedPublisher
   rgbCam: {fileID: 1360485373}
-  topic: /camera/color/image_raw/compressed
+  topic: /rgb
   frameId: camera_color_frame
   width: 1280
   height: 720
@@ -2379,7 +2422,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1542554629}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!20 &1542554633
 Camera:
   m_ObjectHideFlags: 0
@@ -2729,7 +2772,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1823688464}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!20 &1823688466
 Camera:
   m_ObjectHideFlags: 0
@@ -2966,7 +3009,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f70ed9b691c16c345914cbcec55b4324, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  linearDepthShader: {fileID: 0}
+  linearDepthShader: {fileID: 4800000, guid: 889077bf8ae6f6d478511a77969f04ba, type: 3}
 --- !u!1 &1901707724
 GameObject:
   m_ObjectHideFlags: 0
@@ -3272,7 +3315,7 @@ GameObject:
   - component: {fileID: 2036572688}
   - component: {fileID: 2036572689}
   - component: {fileID: 2036572690}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: DepthCam
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3533,7 +3576,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RosDepthMono8Publisher
   depthCam: {fileID: 2036572687}
-  topic: /camera/depth/image_mono8
+  topic: /depth
   frameId: camera_depth_frame
   fps: 15
   maxMeters: 20
@@ -3721,3 +3764,4 @@ SceneRoots:
   - {fileID: 1777653781}
   - {fileID: 519478560}
   - {fileID: 691948127}
+  - {fileID: 185201101}
